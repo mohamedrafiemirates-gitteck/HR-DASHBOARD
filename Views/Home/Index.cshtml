@@ -110,9 +110,9 @@ else
                         <th class="employee-col" scope="col">Employee</th>
                         <th scope="col">Department</th>
                         <th scope="col">Status</th>
-                        @foreach (var type in Model.DocumentTypes)
+                        @for (var i = 0; i < Model.DocumentTypes.Count; i++)
                         {
-                            <th class="document-col" scope="col"><span>@type.Code</span><small>@type.Name</small></th>
+                            <th class="document-col" scope="col" title="@Model.DocumentTypes[i].Name"><span>DOC@(i + 1)</span><small>@Model.DocumentTypes[i].Name</small></th>
                         }
                     </tr>
                 </thead>

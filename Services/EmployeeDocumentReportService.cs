@@ -6,8 +6,27 @@ namespace EmployeeDocumentTracker.Services;
 
 public sealed class EmployeeDocumentReportService(IConfiguration configuration)
 {
-    private readonly string _connectionString = configuration.GetConnectionString("PayrollDb")
-        ?? throw new InvalidOperationException("Connection string 'PayrollDb' is not configured.");
+    private readonly string _connectionString = BuildConnectionString(configuration);
+
+    private static string BuildConnectionString(IConfiguration configuration)
+    {
+        var full = configuration.GetConnectionString("PayrollDb");
+        if (!string.IsNullOrWhiteSpace(full)) return full;
+
+        var server = configuration["DB_SERVER"];
+        if (string.IsNullOrWhiteSpace(server))
+            throw new InvalidOperationException("Set environment variables DB_SERVER, DB_USER and DB_PASSWORD (or ConnectionStrings__PayrollDb).");
+
+        return new SqlConnectionStringBuilder
+        {
+            DataSource = server,
+            InitialCatalog = configuration["DB_NAME"] is { Length: > 0 } name ? name : "PayrollDB",
+            UserID = configuration["DB_USER"] ?? string.Empty,
+            Password = configuration["DB_PASSWORD"] ?? string.Empty,
+            Encrypt = true,
+            TrustServerCertificate = true
+        }.ConnectionString;
+    }
 
     public async Task<List<string>> GetCompaniesAsync(CancellationToken cancellationToken)
     {
@@ -43,7 +62,7 @@ public sealed class EmployeeDocumentReportService(IConfiguration configuration)
         await using var connection = new SqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
 
-        const string typesQuery = "SELECT Code, Name FROM dbo.Document WHERE CompID = @CompanyId ORDER BY Name, Code;";
+        const string typesQuery = "SELECT Code, Name FROM dbo.Document WHERE CompID = @CompanyId ORDER BY Code;";
         await using (var command = new SqlCommand(typesQuery, connection))
         {
             command.Parameters.AddWithValue("@CompanyId", companyId);
@@ -95,12 +114,7 @@ public sealed class EmployeeDocumentReportService(IConfiguration configuration)
                 if (string.IsNullOrWhiteSpace(code)) continue;
                 if (!model.DocumentTypes.Any(type => type.Code.Equals(code, StringComparison.OrdinalIgnoreCase)))
                 {
-                    model.DocumentTypes.Add(new DocumentTypeViewModel(code, code.ToUpperInvariant() switch
-                    {
-                        "CONT" => "Contract end",
-                        "PB" => "Probation end",
-                        _ => code
-                    }));
+                    model.DocumentTypes.Add(new DocumentTypeViewModel(code, code));
                 }
                 var cell = new EmployeeDocumentCellViewModel
                 {
@@ -116,7 +130,7 @@ public sealed class EmployeeDocumentReportService(IConfiguration configuration)
             }
         }
 
-        model.DocumentTypes = model.DocumentTypes.OrderBy(type => type.Name, StringComparer.OrdinalIgnoreCase).ThenBy(type => type.Code).ToList();
+        model.DocumentTypes = model.DocumentTypes.OrderBy(type => type.Code, StringComparer.OrdinalIgnoreCase).ToList();
         model.Employees = employees.Values.OrderBy(employee => employee.FullName, StringComparer.OrdinalIgnoreCase).ThenBy(employee => employee.EmployeeNumber).ToList();
         BuildDashboard(model);
         return model;
@@ -169,7 +183,6 @@ public sealed class EmployeeDocumentReportService(IConfiguration configuration)
 
     private static string GetState(string code, EmployeeDocumentCellViewModel cell, DateTime today, DateTime cutoff)
     {
-        if (string.IsNullOrWhiteSpace(cell.DocumentNumber) && code is not ("CONT" or "PB")) return "Incomplete";
         if (cell.ExpiryDate is not DateTime expiry) return string.IsNullOrWhiteSpace(cell.DocumentNumber) ? "Incomplete" : "No expiry";
         if (expiry.Date < today) return "Expired";
         if (expiry.Date <= cutoff) return "Expiring";
