@@ -1,0 +1,15 @@
+Employee Document Tracker
+
+Project folder:
+D:\PROJECTS\EmployeeDocumentTracker
+
+Start from PowerShell:
+dotnet run --project "D:\PROJECTS\EmployeeDocumentTracker\EmployeeDocumentTracker.csproj" --launch-profile http
+
+Open in a browser:
+http://localhost:5253
+
+Stop the app:
+Press Ctrl+C in the terminal running the app.
+
+The development connection uses Windows Integrated Security to connect to localhost / PayrollDB.

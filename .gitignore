@@ -1,0 +1,16 @@
+## Build output
+bin/
+obj/
+
+## IDE state
+.vs/
+*.user
+*.suo
+
+## Test output
+TestResults/
+
+## Separate repository/data folder that is not part of this tracker
+HRDASHBOARD/
+EmployeeDocumentTracker/
+HR-DASHBOARD/
