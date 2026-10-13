@@ -1,0 +1,32 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Site.master.cs" Inherits="EmployeeDocumentTracker.SiteMaster" %>
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link rel="icon" href="~/Content/favicon.ico" />
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/site.css" />
+    <link rel="stylesheet" href="~/Content/tracker.css" />
+</head>
+<body>
+    <form id="form1" runat="server">
+        <header>
+            <nav class="navbar tracker-nav">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="<%: ResolveUrl("~/") %>"><span class="brand-mark">ED</span> Employee documents</a>
+                    <span class="nav-context">PAYROLLDB <i></i> TRACKING</span>
+                </div>
+            </nav>
+        </header>
+        <div class="page-shell">
+            <main role="main" class="pb-3">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </main>
+        </div>
+    </form>
+    <script src="<%: ResolveUrl("~/Scripts/bootstrap.bundle.min.js") %>"></script>
+    <asp:ContentPlaceHolder ID="ScriptsContent" runat="server" />
+</body>
+</html>
