@@ -60,7 +60,44 @@ namespace EmployeeDocumentTracker
                     }
                 }
 
-                Model = service.GetReport(ddlCompany.SelectedValue, int.Parse(ddlExpiry.SelectedValue, CultureInfo.InvariantCulture));
+                var termFrom = DateTime.Today.AddYears(-1);
+                var termTo = DateTime.Today;
+                if (!IsPostBack)
+                {
+                    txtFrom.Text = termFrom.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    txtTo.Text = termTo.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    DateTime parsed;
+                    if (DateTime.TryParseExact(txtFrom.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed)) termFrom = parsed;
+                    if (DateTime.TryParseExact(txtTo.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed)) termTo = parsed;
+                    if (termFrom > termTo) { var swap = termFrom; termFrom = termTo; termTo = swap; }
+                    txtFrom.Text = termFrom.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    txtTo.Text = termTo.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                }
+
+                if (!IsPostBack)
+                {
+                    for (var y = DateTime.Today.Year; y >= DateTime.Today.Year - 9; y--)
+                    {
+                        ddlTurnYear.Items.Add(new ListItem(y.ToString(CultureInfo.InvariantCulture), y.ToString(CultureInfo.InvariantCulture)));
+                    }
+                    ddlTurnPeriod.Items.Add(new ListItem("Full year", "0"));
+                    ddlTurnPeriod.Items.Add(new ListItem("Q1 (Jan - Mar)", "1"));
+                    ddlTurnPeriod.Items.Add(new ListItem("Q2 (Apr - Jun)", "2"));
+                    ddlTurnPeriod.Items.Add(new ListItem("Q3 (Jul - Sep)", "3"));
+                    ddlTurnPeriod.Items.Add(new ListItem("Q4 (Oct - Dec)", "4"));
+                }
+
+                Model = service.GetReport(ddlCompany.SelectedValue, int.Parse(ddlExpiry.SelectedValue, CultureInfo.InvariantCulture), termFrom, termTo);
+                var turnYear = int.Parse(ddlTurnYear.SelectedValue, CultureInfo.InvariantCulture);
+                var turnQuarter = int.Parse(ddlTurnPeriod.SelectedValue, CultureInfo.InvariantCulture);
+                var turnFrom = turnQuarter == 0 ? new DateTime(turnYear, 1, 1) : new DateTime(turnYear, (turnQuarter - 1) * 3 + 1, 1);
+                var turnTo = turnQuarter == 0 ? new DateTime(turnYear, 12, 31) : turnFrom.AddMonths(3).AddDays(-1);
+                service.FillSalary(Model, ddlCompany.SelectedValue);
+                service.FillTurnover(Model, ddlCompany.SelectedValue, turnFrom, turnTo,
+                    turnQuarter == 0 ? "Year " + turnYear : "Q" + turnQuarter + " " + turnYear);
                 Model.Companies = companies;
             }
             catch (Exception exception)

@@ -8,14 +8,14 @@
     <link rel="icon" href="~/Content/favicon.ico" />
     <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
     <link rel="stylesheet" href="~/Content/site.css" />
-    <link rel="stylesheet" href="~/Content/tracker.css" />
+    <link rel="stylesheet" href="<%: ResolveUrl("~/Content/tracker.css") %>?v=<%: System.IO.File.GetLastWriteTimeUtc(Server.MapPath("~/Content/tracker.css")).Ticks %>" />
 </head>
 <body>
     <form id="form1" runat="server">
         <header>
             <nav class="navbar tracker-nav">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="<%: ResolveUrl("~/") %>"><span class="brand-mark">ED</span> Employee documents</a>
+                    <a class="navbar-brand" href="<%: ResolveUrl("~/") %>"><span class="brand-mark">HR</span> HR Module Power BI Dashboard</a>
                     <span class="nav-context">PAYROLLDB <i></i> TRACKING</span>
                 </div>
             </nav>

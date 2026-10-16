@@ -117,3 +117,25 @@ h1, h2, .navbar-brand { font-family: "Space Grotesk", sans-serif; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
 }
+
+.report-tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+.report-tab { border: 0; background: transparent; padding: 9px 16px; font-weight: 700; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px; cursor: pointer; }
+.report-tab.active { color: var(--ink); border-bottom-color: var(--green); }
+.tab-count { display: inline-block; min-width: 22px; padding: 0 7px; margin-left: 4px; border-radius: 10px; background: var(--amber); color: #fff; font-size: .75rem; text-align: center; }
+.tab-panel[hidden] { display: none; }
+.tab-count-red { background: var(--coral); }
+.term-filters { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 14px; }
+.term-filters label { display: grid; gap: 4px; font-size: .8rem; font-weight: 700; color: var(--muted); }
+.turnover-charts { grid-template-columns: 1fr 1fr; }
+.total-row th, .total-row td { background: #f1f4f1; border-top: 2px solid var(--line); }
+.tab-count-green { background: var(--green); }
+.salary-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.salary-table .dept-row th { background: #e6ece8; color: var(--ink); text-transform: uppercase; font-size: .75rem; letter-spacing: .05em; }
+.salary-table .subtotal-row th, .salary-table .subtotal-row td { background: #f6f8f6; font-weight: 700; border-top: 1px solid var(--line); }
+
+.export-bar { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+.export-btn { font-weight: 600; white-space: nowrap; }
+.table-heading { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px; }
+
+.chart-full { grid-template-columns: 1fr; }
+.chart-full .chart-wrap { height: 380px; }
